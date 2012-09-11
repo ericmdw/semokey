@@ -1,0 +1,68 @@
+body, html, div, blockquote, img, label, p, h1, h2, h3, h4, h5, h6, pre, ul, ol, li, dl, dt, dd, form, a, fieldset, input, th, td {
+	margin:0;
+	padding:0;
+	border:0;
+	outline:none;
+}
+
+body {
+	font-family: helvetica, sans-serif;
+}
+
+#page {
+	border-top: 3px solid black;
+	width: 700px;
+	margin: 0 auto;
+	padding: 10px;
+}
+
+#title {
+	font-family: impact, sans-serif;
+	font-size: 300%;
+	letter-spacing: -3px;
+	margin-left: 5%;
+	margin-bottom: 12px;
+}
+#title .word1 {
+	color: #272727;
+}
+#title .word2 {
+	color: #424242;
+}
+
+textarea, input {
+	font-family: helvetica, sans-serif;
+	border: 1px solid black;
+	padding: 2px;
+}
+
+textarea:focus, input:focus {
+	background-color: #d0d0d0;
+}
+
+.prompt {
+	margin-bottom: 12px;
+}
+
+.small {
+	font-size: 80%;
+}
+
+#rememberSeedWarning {
+	font-size: 80%;
+	width: 90%;
+	margin: 0 auto;
+}
+
+#revealedPassword {
+	font-family: monospace;
+	font-size: 5px;
+	line-height: 24px;
+	border: 1px solid black;
+	margin: 16px;
+	color: #000;
+	background-color: #d0ffd0;
+	text-align:center;
+	width:50%;
+	letter-spacing: 8px;
+}

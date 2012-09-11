@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+		<title>Semokey : Web</title>
+		
+		<link rel="stylesheet" type="text/css" href="semokey.css">
+		
+		<script type="text/javascript" src="semokey.js"></script>	
+	</head>
+	<body>
+		<div id="page">
+			<div id="title"><span class="word1">semo</span><span class="word2">key</span></div>
+			<div id="seedTextInput" class="prompt advanced" style="display:none;">
+				Seed the generator with text:<br/>
+				<textarea id="seedText" name="seedText" rows="4" cols="60">You need to fill this in with a paragraph of text of your choosing. You will only need to retype it when setting up a new device, but it does need to be memorable -- if you forget it, you lose access to all your passwords! I'd recommend a passage from a favorite book.</textarea><br/>
+				<input type="checkbox" id="rememberSettings" name="rememberSettings"> <span class="small">Remember</span>
+				<div id="rememberSeedWarning" style="display:none;">Warning: your seed text will be transmitted across the net to the server in plaintext the next time you visit this page. For most uses this is fine, but you should be aware in case this affects you.</div>
+			</div>
+			
+			<div id="resourceInput" class="prompt">
+				Calculate password for resource:<br/>
+				<input type="text" name="resource" id="resource" class="text">
+			</div>
+		
+			<div id="passwordLengthInput" class="prompt advanced" style="display:none;">
+				With length: <br/>
+				<input type="text" id="passwordLength" value="12" size="4" maxlength="4" class="text">
+			</div>
+
+			<div id="passwordInput" class="prompt">
+				Using master-password:<br/>
+				<input type="password" id="password" value="" class="text">
+			</div>
+
+			<div id="actionInput">
+				<input type="button" value="Generate" id="revealButton">
+				<input type="button" value="Show Advanced Options" id="optionsButton">
+			</div>
+		
+			<input type="text" id="revealedPassword" style="display:none;">
+		</div>
+		<script type="text/javascript">
+			function skevent(element, name, fn) {
+				if(element.addEventListener) {
+					element.addEventListener(name, fn, false);
+				} else if(element.attachEvent) {
+					element.attachEvent('on' + name, fn);
+				} else {
+					element['on' + name] = fn;
+				}
+			}
+			
+			function saveSettings() {
+				var localStorageSupported = typeof(localStorage) != 'undefined';
+				var seedText = document.getElementById('seedText').value;
+				var passwordLength = document.getElementById('passwordLength').value;
+				
+				if(localStorageSupported) {
+					localStorage.setItem('semokey_seedtext', seedText);
+					localStorage.setItem('semokey_length', passwordLength)
+				} else {
+					document.cookie = 'semokey_seedtext=' + escape(text);
+				}
+			}
+			
+			function restoreSettings() {
+				var retrieveSetting = typeof(localStorage) != 'undefined' ?
+						function(settingName) {
+							return localStorage.getItem(settingName);
+						}
+					:
+						function(settingName) {
+							var cookies = document.cookie.split(';');
+							if(cookies.length < 1) return null;
+
+							for(var cookie in cookies) {
+								var parts = cookie.split('=');
+								var key = parts[0];
+								var value = parts.length > 1 ? parts[1] : '';
+
+								if(settingName == key) return unescape(value);
+							}
+						};
+				var seedText = retrieveSetting('semokey_seedtext');
+				if(null != seedText) {
+					document.getElementById('seedText').value = seedText;
+					document.getElementById('passwordLength').value = retrieveSetting('semokey_length');
+					
+					document.getElementById('rememberSettings').checked = true;
+					document.getElementById('rememberSeedWarning').style.display='';
+				}
+			}
+			
+			function removeSettings() {
+				var localStorageSupported = typeof(localStorage) != 'undefined';
+				if(localStorageSupported) {
+					for(var i = localStorage.length - 1; i >= 0; i--) {
+						localStorage.clear();
+					}
+				} else {
+					document.cookie = '';
+				}
+			}
+
+			function setupPage() {
+				var seedTextElement = document.getElementById('seedText');
+				var rememberSettingsElement = document.getElementById('rememberSettings');
+				var resourceElement = document.getElementById('resource');
+				var passwordElement = document.getElementById('password');
+				var lengthElement = document.getElementById('passwordLength');
+				var revealButtonElement = document.getElementById('revealButton');
+				var optionsButtonElement = document.getElementById('optionsButton');
+				var revealedPasswordElement = document.getElementById('revealedPassword');
+
+				skevent(revealButtonElement, 'click', function() {
+					if(rememberSettingsElement.checked) {
+						saveSettings();
+					} else {
+						removeSettings();
+					}
+					
+					var pw = Semokey.generate(seedTextElement.value, resourceElement.value, passwordElement.value, lengthElement.value);
+					revealedPasswordElement.value = pw;
+					revealedPasswordElement.style.display='';
+				});
+				
+				skevent(optionsButtonElement, 'click', function() {
+					document.getElementById('passwordLengthInput').style.display='';
+					document.getElementById('seedTextInput').style.display='';
+				});
+				
+				skevent(rememberSettingsElement, 'click', function() {
+					if(rememberSettingsElement.checked) {
+						document.getElementById('rememberSeedWarning').style.display='';
+					} else {
+						document.getElementById('rememberSeedWarning').style.display='none';
+					}
+				});
+
+				restoreSettings();
+			}
+			setupPage();
+		</script>
+	</body>
+</html>
